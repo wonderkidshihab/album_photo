@@ -1,3 +1,4 @@
+import 'package:albumapp/Data/Remote/RemoteRepository/RemoteRepository.dart';
 import 'package:flutter/material.dart';
 
 class SpalshScreen extends StatefulWidget {
@@ -12,19 +13,31 @@ class _SpalshScreenState extends State<SpalshScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: FutureBuilder<bool>(
+          future: getData(),
           builder: (context, snapshot) {
-        return !snapshot.hasData
-            ? Container(
-                child: Center(
-                  child: Image.asset("assets/icon.png"),
-                ),
-              )
-            : snapshot.hasError
-                ? Center(
-                    child: Text("Can not connect to server. Please try again"),
+            return !snapshot.hasData
+                ? Container(
+                    child: Center(
+                      child: Image.asset("assets/icon.png"),
+                    ),
                   )
-                : Container();
-      }),
+                : snapshot.hasError
+                    ? Center(
+                        child:
+                            Text("Can not connect to server. Please try again"),
+                      )
+                    : Container();
+          }),
     );
+  }
+
+  getData() async {
+    var a = await Future.wait(
+      [
+        RemoteRepository().getAlbums(),
+        RemoteRepository().getPhotos(),
+      ],
+    );
+    return a[0];
   }
 }
